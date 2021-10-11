@@ -39,7 +39,7 @@ resource "aci_rest" "l3extLNodeP" {
 
 resource "aci_rest" "l3extRsNodeL3OutAtt" {
   for_each   = { for node in var.nodes : node.node_id => node }
-  dn         = "${aci_rest.l3extLNodeP.id}/rsnodeL3OutAtt-[topology/pod-${each.value.pod_id}/node-${each.value.node_id}]"
+  dn         = "${aci_rest.l3extLNodeP.dn}/rsnodeL3OutAtt-[topology/pod-${each.value.pod_id}/node-${each.value.node_id}]"
   class_name = "l3extRsNodeL3OutAtt"
   content = {
     rtrId         = each.value.router_id
@@ -49,7 +49,7 @@ resource "aci_rest" "l3extRsNodeL3OutAtt" {
 
 resource "aci_rest" "ipRouteP" {
   for_each   = { for item in local.static_routes : item.key => item.value }
-  dn         = "${aci_rest.l3extRsNodeL3OutAtt[each.value.node].id}/rt-[${each.value.prefix}]"
+  dn         = "${aci_rest.l3extRsNodeL3OutAtt[each.value.node].dn}/rt-[${each.value.prefix}]"
   class_name = "ipRouteP"
   content = {
     ip    = each.value.prefix
@@ -60,7 +60,7 @@ resource "aci_rest" "ipRouteP" {
 
 resource "aci_rest" "ipNexthopP" {
   for_each   = { for item in local.next_hops : item.key => item.value }
-  dn         = "${aci_rest.ipRouteP[each.value.static_route].id}/nh-[${each.value.ip}]"
+  dn         = "${aci_rest.ipRouteP[each.value.static_route].dn}/nh-[${each.value.ip}]"
   class_name = "ipNexthopP"
   content = {
     nhAddr = each.value.ip
@@ -71,7 +71,7 @@ resource "aci_rest" "ipNexthopP" {
 
 resource "aci_rest" "l3extInfraNodeP" {
   for_each   = { for node in var.nodes : node.node_id => node if var.tenant == "infra" }
-  dn         = "${aci_rest.l3extRsNodeL3OutAtt[each.key].id}/infranodep"
+  dn         = "${aci_rest.l3extRsNodeL3OutAtt[each.key].dn}/infranodep"
   class_name = "l3extInfraNodeP"
   content = {
     fabricExtCtrlPeering = "yes"
