@@ -13,7 +13,7 @@ Location in GUI:
 ```hcl
 module "aci_l3out_node_profile" {
   source  = "netascode/l3out-node-profile/aci"
-  version = ">= 0.0.1"
+  version = ">= 0.1.0"
 
   tenant = "ABC"
   l3out  = "L3OUT1"
@@ -35,7 +35,6 @@ module "aci_l3out_node_profile" {
     }]
   }]
 }
-
 ```
 
 ## Requirements
@@ -43,13 +42,13 @@ module "aci_l3out_node_profile" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_aci"></a> [aci](#requirement\_aci) | >= 0.2.0 |
+| <a name="requirement_aci"></a> [aci](#requirement\_aci) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aci"></a> [aci](#provider\_aci) | >= 0.2.0 |
+| <a name="provider_aci"></a> [aci](#provider\_aci) | >= 2.0.0 |
 
 ## Inputs
 
@@ -71,9 +70,9 @@ module "aci_l3out_node_profile" {
 
 | Name | Type |
 |------|------|
-| [aci_rest.ipNexthopP](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.ipRouteP](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.l3extInfraNodeP](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.l3extLNodeP](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.l3extRsNodeL3OutAtt](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
+| [aci_rest_managed.ipNexthopP](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.ipRouteP](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.l3extInfraNodeP](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.l3extLNodeP](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.l3extRsNodeL3OutAtt](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
 <!-- END_TF_DOCS -->

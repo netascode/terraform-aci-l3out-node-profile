@@ -5,18 +5,18 @@ terraform {
     }
 
     aci = {
-      source  = "netascode/aci"
-      version = ">=0.2.0"
+      source  = "CiscoDevNet/aci"
+      version = ">=2.0.0"
     }
   }
 }
 
-resource "aci_rest" "fvTenant" {
+resource "aci_rest_managed" "fvTenant" {
   dn         = "uni/tn-TF"
   class_name = "fvTenant"
 }
 
-resource "aci_rest" "l3extOut" {
+resource "aci_rest_managed" "l3extOut" {
   dn         = "uni/tn-TF/out-L3OUT1"
   class_name = "l3extOut"
 }
@@ -45,7 +45,7 @@ module "main" {
   }]
 }
 
-data "aci_rest" "l3extLNodeP" {
+data "aci_rest_managed" "l3extLNodeP" {
   dn = module.main.dn
 
   depends_on = [module.main]
@@ -56,13 +56,13 @@ resource "test_assertions" "l3extLNodeP" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.l3extLNodeP.content.name
+    got         = data.aci_rest_managed.l3extLNodeP.content.name
     want        = module.main.name
   }
 }
 
-data "aci_rest" "l3extRsNodeL3OutAtt" {
-  dn = "${data.aci_rest.l3extLNodeP.id}/rsnodeL3OutAtt-[topology/pod-2/node-201]"
+data "aci_rest_managed" "l3extRsNodeL3OutAtt" {
+  dn = "${data.aci_rest_managed.l3extLNodeP.id}/rsnodeL3OutAtt-[topology/pod-2/node-201]"
 
   depends_on = [module.main]
 }
@@ -72,19 +72,19 @@ resource "test_assertions" "l3extRsNodeL3OutAtt" {
 
   equal "rtrId" {
     description = "rtrId"
-    got         = data.aci_rest.l3extRsNodeL3OutAtt.content.rtrId
+    got         = data.aci_rest_managed.l3extRsNodeL3OutAtt.content.rtrId
     want        = "2.2.2.2"
   }
 
   equal "rtrIdLoopBack" {
     description = "rtrIdLoopBack"
-    got         = data.aci_rest.l3extRsNodeL3OutAtt.content.rtrIdLoopBack
+    got         = data.aci_rest_managed.l3extRsNodeL3OutAtt.content.rtrIdLoopBack
     want        = "no"
   }
 }
 
-data "aci_rest" "ipRouteP" {
-  dn = "${data.aci_rest.l3extRsNodeL3OutAtt.id}/rt-[0.0.0.0/0]"
+data "aci_rest_managed" "ipRouteP" {
+  dn = "${data.aci_rest_managed.l3extRsNodeL3OutAtt.id}/rt-[0.0.0.0/0]"
 
   depends_on = [module.main]
 }
@@ -94,25 +94,25 @@ resource "test_assertions" "ipRouteP" {
 
   equal "ip" {
     description = "ip"
-    got         = data.aci_rest.ipRouteP.content.ip
+    got         = data.aci_rest_managed.ipRouteP.content.ip
     want        = "0.0.0.0/0"
   }
 
   equal "descr" {
     description = "descr"
-    got         = data.aci_rest.ipRouteP.content.descr
+    got         = data.aci_rest_managed.ipRouteP.content.descr
     want        = "Default Route"
   }
 
   equal "pref" {
     description = "pref"
-    got         = data.aci_rest.ipRouteP.content.pref
+    got         = data.aci_rest_managed.ipRouteP.content.pref
     want        = "10"
   }
 }
 
-data "aci_rest" "ipNexthopP" {
-  dn = "${data.aci_rest.ipRouteP.id}/nh-[3.3.3.3]"
+data "aci_rest_managed" "ipNexthopP" {
+  dn = "${data.aci_rest_managed.ipRouteP.id}/nh-[3.3.3.3]"
 
   depends_on = [module.main]
 }
@@ -122,19 +122,19 @@ resource "test_assertions" "ipNexthopP" {
 
   equal "nhAddr" {
     description = "nhAddr"
-    got         = data.aci_rest.ipNexthopP.content.nhAddr
+    got         = data.aci_rest_managed.ipNexthopP.content.nhAddr
     want        = "3.3.3.3"
   }
 
   equal "pref" {
     description = "pref"
-    got         = data.aci_rest.ipNexthopP.content.pref
+    got         = data.aci_rest_managed.ipNexthopP.content.pref
     want        = "10"
   }
 
   equal "type" {
     description = "type"
-    got         = data.aci_rest.ipNexthopP.content.type
+    got         = data.aci_rest_managed.ipNexthopP.content.type
     want        = "prefix"
   }
 }

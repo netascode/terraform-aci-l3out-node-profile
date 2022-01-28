@@ -5,18 +5,18 @@ terraform {
     }
 
     aci = {
-      source  = "netascode/aci"
-      version = ">=0.2.0"
+      source  = "CiscoDevNet/aci"
+      version = ">=2.0.0"
     }
   }
 }
 
-resource "aci_rest" "fvTenant" {
+resource "aci_rest_managed" "fvTenant" {
   dn         = "uni/tn-TF"
   class_name = "fvTenant"
 }
 
-resource "aci_rest" "l3extOut" {
+resource "aci_rest_managed" "l3extOut" {
   dn         = "uni/tn-TF/out-L3OUT1"
   class_name = "l3extOut"
 }
@@ -29,7 +29,7 @@ module "main" {
   name   = "NP1"
 }
 
-data "aci_rest" "l3extLNodeP" {
+data "aci_rest_managed" "l3extLNodeP" {
   dn = module.main.dn
 
   depends_on = [module.main]
@@ -40,7 +40,7 @@ resource "test_assertions" "l3extLNodeP" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.l3extLNodeP.content.name
+    got         = data.aci_rest_managed.l3extLNodeP.content.name
     want        = module.main.name
   }
 }
