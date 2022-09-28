@@ -6,8 +6,8 @@ locals {
         value = {
           node        = node.node_id
           prefix      = sr.prefix
-          description = sr.description != null ? sr.description : ""
-          preference  = sr.preference != null ? sr.preference : 1
+          description = sr.description
+          preference  = sr.preference
         }
       }
     ]
@@ -20,8 +20,8 @@ locals {
           value = {
             static_route = "${node.node_id}/${sr.prefix}"
             ip           = nh.ip
-            preference   = nh.preference != null ? nh.preference : 1
-            type         = nh.type != null ? nh.type : "prefix"
+            preference   = nh.preference
+            type         = nh.type
           }
         }
       ]
@@ -43,7 +43,7 @@ resource "aci_rest_managed" "l3extRsNodeL3OutAtt" {
   class_name = "l3extRsNodeL3OutAtt"
   content = {
     rtrId         = each.value.router_id
-    rtrIdLoopBack = each.value.router_id_as_loopback == false ? "no" : "yes"
+    rtrIdLoopBack = each.value.router_id_as_loopback == true ? "yes" : "no"
   }
 }
 

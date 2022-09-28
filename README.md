@@ -13,7 +13,7 @@ Location in GUI:
 ```hcl
 module "aci_l3out_node_profile" {
   source  = "netascode/l3out-node-profile/aci"
-  version = ">= 0.1.0"
+  version = ">= 0.2.0"
 
   tenant = "ABC"
   l3out  = "L3OUT1"
@@ -41,7 +41,7 @@ module "aci_l3out_node_profile" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_aci"></a> [aci](#requirement\_aci) | >= 2.0.0 |
 
 ## Providers
@@ -57,7 +57,7 @@ module "aci_l3out_node_profile" {
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | Tenant name. | `string` | n/a | yes |
 | <a name="input_l3out"></a> [l3out](#input\_l3out) | L3out name. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | Node profile name. | `string` | n/a | yes |
-| <a name="input_nodes"></a> [nodes](#input\_nodes) | List of nodes. Allowed values `node_id`: 1-4000. Allowed values `pod_id`: 1-255. Default value `pod_id`: 1. Default value `router_id_as_loopback`: true. Allowed values `static_routes.preference`: 1-255. Default value `static_routes.preference`: 1. Allowed values `static_routes.next_hops.preference`: 1-255. Default value `static_routes.next_hops.preference`: 1. Choices `type`: `prefix`, `none`. Default value `type`: `prefix`. | <pre>list(object({<br>    node_id               = number<br>    pod_id                = optional(number)<br>    router_id             = string<br>    router_id_as_loopback = optional(bool)<br>    static_routes = optional(list(object({<br>      prefix      = string<br>      description = optional(string)<br>      preference  = optional(string)<br>      next_hops = optional(list(object({<br>        ip         = string<br>        preference = optional(number)<br>        type       = optional(string)<br>      })))<br>    })))<br>  }))</pre> | `[]` | no |
+| <a name="input_nodes"></a> [nodes](#input\_nodes) | List of nodes. Allowed values `node_id`: 1-4000. Allowed values `pod_id`: 1-255. Default value `pod_id`: 1. Default value `router_id_as_loopback`: true. Allowed values `static_routes.preference`: 1-255. Default value `static_routes.preference`: 1. Allowed values `static_routes.next_hops.preference`: 1-255. Default value `static_routes.next_hops.preference`: 1. Choices `type`: `prefix`, `none`. Default value `type`: `prefix`. | <pre>list(object({<br>    node_id               = number<br>    pod_id                = optional(number, 1)<br>    router_id             = string<br>    router_id_as_loopback = optional(bool, true)<br>    static_routes = optional(list(object({<br>      prefix      = string<br>      description = optional(string, "")<br>      preference  = optional(number, 1)<br>      next_hops = optional(list(object({<br>        ip         = string<br>        preference = optional(number, 1)<br>        type       = optional(string, "prefix")<br>      })), [])<br>    })), [])<br>  }))</pre> | `[]` | no |
 
 ## Outputs
 

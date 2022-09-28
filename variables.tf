@@ -32,19 +32,19 @@ variable "nodes" {
   description = "List of nodes. Allowed values `node_id`: 1-4000. Allowed values `pod_id`: 1-255. Default value `pod_id`: 1. Default value `router_id_as_loopback`: true. Allowed values `static_routes.preference`: 1-255. Default value `static_routes.preference`: 1. Allowed values `static_routes.next_hops.preference`: 1-255. Default value `static_routes.next_hops.preference`: 1. Choices `type`: `prefix`, `none`. Default value `type`: `prefix`."
   type = list(object({
     node_id               = number
-    pod_id                = optional(number)
+    pod_id                = optional(number, 1)
     router_id             = string
-    router_id_as_loopback = optional(bool)
+    router_id_as_loopback = optional(bool, true)
     static_routes = optional(list(object({
       prefix      = string
-      description = optional(string)
-      preference  = optional(string)
+      description = optional(string, "")
+      preference  = optional(number, 1)
       next_hops = optional(list(object({
         ip         = string
-        preference = optional(number)
-        type       = optional(string)
-      })))
-    })))
+        preference = optional(number, 1)
+        type       = optional(string, "prefix")
+      })), [])
+    })), [])
   }))
   default = []
 
