@@ -1,3 +1,9 @@
+## 0.2.1 (unreleased)
+
+- Add support for node loopbacks
+- Add support for static route BFD
+- Add support for loopback BGP peerings
+
 ## 0.2.0
 
 - Update to support new Terraform 1.3 `optional` syntax

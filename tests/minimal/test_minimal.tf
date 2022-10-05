@@ -19,7 +19,7 @@ resource "aci_rest_managed" "fvTenant" {
 }
 
 resource "aci_rest_managed" "l3extOut" {
-  dn         = "uni/tn-TF/out-L3OUT1"
+  dn         = "${aci_rest_managed.fvTenant.dn}/out-L3OUT1"
   class_name = "l3extOut"
 }
 
@@ -29,6 +29,8 @@ module "main" {
   tenant = "TF"
   l3out  = "L3OUT1"
   name   = "NP1"
+
+  depends_on = [aci_rest_managed.l3extOut]
 }
 
 data "aci_rest_managed" "l3extLNodeP" {
