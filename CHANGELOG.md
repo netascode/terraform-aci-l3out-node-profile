@@ -1,4 +1,4 @@
-## 0.2.1 (unreleased)
+## 0.2.1
 
 - Add support for node loopbacks
 - Add support for static route BFD
