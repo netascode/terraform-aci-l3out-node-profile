@@ -1,4 +1,4 @@
-## 0.2.2 (unreleased)
+## 0.2.2
 
 - Fix BGP peer address family attribute order
 
