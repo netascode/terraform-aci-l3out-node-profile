@@ -1,3 +1,7 @@
+## 0.2.2 (unreleased)
+
+- Fix BGP peer address family attribute order
+
 ## 0.2.1
 
 - Add support for node loopbacks

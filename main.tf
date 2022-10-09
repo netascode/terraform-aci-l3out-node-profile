@@ -139,7 +139,7 @@ resource "aci_rest_managed" "bgpPeerP" {
     ttl              = each.value.ttl
     weight           = each.value.weight
     privateASctrl    = join(",", concat(each.value.remove_all_private_as == true ? ["remove-all"] : [], each.value.remove_private_as == true ? ["remove-exclusive"] : [], each.value.replace_private_as_with_local_as == true ? ["replace-as"] : []))
-    addrTCtrl        = join(",", concat(each.value.unicast_address_family == true ? ["af-ucast"] : [], each.value.multicast_address_family == true ? ["af-mcast"] : []))
+    addrTCtrl        = join(",", concat(each.value.multicast_address_family == true ? ["af-mcast"] : [], each.value.unicast_address_family == true ? ["af-ucast"] : []))
     adminSt          = each.value.admin_state == true ? "enabled" : "disabled"
   }
 
