@@ -1,3 +1,7 @@
+## 0.2.3 (unreleased)
+
+- BREAKING CHANGE: Refactor BGP peers to move outside of `nodes` list
+
 ## 0.2.2
 
 - Fix BGP peer address family attribute order

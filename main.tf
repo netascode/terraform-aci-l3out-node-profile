@@ -28,42 +28,6 @@ locals {
       ]
     ]
   ])
-  bgp_peers = flatten([
-    for node in var.nodes : [
-      for peer in coalesce(node.bgp_peers, []) : {
-        key = "${node.node_id}/${peer.ip}"
-        value = {
-          node                             = node.node_id
-          ip                               = peer.ip
-          remote_as                        = peer.remote_as
-          description                      = peer.description
-          allow_self_as                    = peer.allow_self_as
-          as_override                      = peer.as_override
-          disable_peer_as_check            = peer.disable_peer_as_check
-          next_hop_self                    = peer.next_hop_self
-          send_community                   = peer.send_community
-          send_ext_community               = peer.send_ext_community
-          password                         = peer.password
-          allowed_self_as_count            = peer.allowed_self_as_count
-          bfd                              = peer.bfd
-          disable_connected_check          = peer.disable_connected_check
-          ttl                              = peer.ttl
-          weight                           = peer.weight
-          remove_all_private_as            = peer.remove_all_private_as
-          remove_private_as                = peer.remove_private_as
-          replace_private_as_with_local_as = peer.replace_private_as_with_local_as
-          unicast_address_family           = peer.unicast_address_family
-          multicast_address_family         = peer.multicast_address_family
-          admin_state                      = peer.admin_state
-          local_as                         = peer.local_as
-          as_propagate                     = peer.as_propagate
-          peer_prefix_policy               = peer.peer_prefix_policy
-          export_route_control             = peer.export_route_control
-          import_route_control             = peer.import_route_control
-        }
-      }
-    ]
-  ])
 }
 
 resource "aci_rest_managed" "l3extLNodeP" {
@@ -126,7 +90,7 @@ resource "aci_rest_managed" "l3extInfraNodeP" {
 }
 
 resource "aci_rest_managed" "bgpPeerP" {
-  for_each   = { for item in local.bgp_peers : item.key => item.value }
+  for_each   = { for peer in var.bgp_peers : peer.ip => peer }
   dn         = "${aci_rest_managed.l3extLNodeP.dn}/peerP-[${each.value.ip}]"
   class_name = "bgpPeerP"
   content = {
@@ -149,7 +113,7 @@ resource "aci_rest_managed" "bgpPeerP" {
 }
 
 resource "aci_rest_managed" "bgpAsP" {
-  for_each   = { for item in local.bgp_peers : item.key => item.value }
+  for_each   = { for peer in var.bgp_peers : peer.ip => peer }
   dn         = "${aci_rest_managed.bgpPeerP[each.key].dn}/as"
   class_name = "bgpAsP"
   content = {
@@ -158,7 +122,7 @@ resource "aci_rest_managed" "bgpAsP" {
 }
 
 resource "aci_rest_managed" "bgpLocalAsnP" {
-  for_each   = { for item in local.bgp_peers : item.key => item.value if item.value.local_as != null }
+  for_each   = { for peer in var.bgp_peers : peer.ip => peer if peer.local_as != null }
   dn         = "${aci_rest_managed.bgpPeerP[each.key].dn}/localasn"
   class_name = "bgpLocalAsnP"
   content = {
@@ -168,7 +132,7 @@ resource "aci_rest_managed" "bgpLocalAsnP" {
 }
 
 resource "aci_rest_managed" "bgpRsPeerPfxPol" {
-  for_each   = { for item in local.bgp_peers : item.key => item.value if item.value.peer_prefix_policy != null }
+  for_each   = { for peer in var.bgp_peers : peer.ip => peer if peer.peer_prefix_policy != null }
   dn         = "${aci_rest_managed.bgpPeerP[each.key].dn}/rspeerPfxPol"
   class_name = "bgpRsPeerPfxPol"
   content = {
@@ -177,7 +141,7 @@ resource "aci_rest_managed" "bgpRsPeerPfxPol" {
 }
 
 resource "aci_rest_managed" "bgpRsPeerToProfile_export" {
-  for_each   = { for item in local.bgp_peers : item.key => item.value if item.value.export_route_control != null }
+  for_each   = { for peer in var.bgp_peers : peer.ip => peer if peer.export_route_control != null }
   dn         = "${aci_rest_managed.bgpPeerP[each.key].dn}/rspeerToProfile-[uni/tn-${var.tenant}/prof-${each.value.export_route_control}]-export"
   class_name = "bgpRsPeerToProfile"
   content = {
@@ -187,7 +151,7 @@ resource "aci_rest_managed" "bgpRsPeerToProfile_export" {
 }
 
 resource "aci_rest_managed" "bgpRsPeerToProfile_import" {
-  for_each   = { for item in local.bgp_peers : item.key => item.value if item.value.import_route_control != null }
+  for_each   = { for peer in var.bgp_peers : peer.ip => peer if peer.import_route_control != null }
   dn         = "${aci_rest_managed.bgpPeerP[each.key].dn}/rspeerToProfile-[uni/tn-${var.tenant}/prof-${each.value.import_route_control}]-import"
   class_name = "bgpRsPeerToProfile"
   content = {
