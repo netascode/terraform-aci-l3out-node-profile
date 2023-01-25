@@ -1,3 +1,7 @@
+## 0.2.4 (unreleased)
+
+- Fix issue with `next_hop_self` attribute
+
 ## 0.2.3
 
 - BREAKING CHANGE: Refactor BGP peers to move outside of `nodes` list
