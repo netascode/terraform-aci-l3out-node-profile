@@ -1,3 +1,7 @@
+## 0.2.5 (unreleased)
+
+- Make the BGP peer `password` variable sensitive
+
 ## 0.2.4
 
 - Fix issue with `next_hop_self` attribute
