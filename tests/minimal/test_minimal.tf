@@ -26,9 +26,11 @@ resource "aci_rest_managed" "l3extOut" {
 module "main" {
   source = "../.."
 
-  tenant = "TF"
-  l3out  = "L3OUT1"
-  name   = "NP1"
+  tenant      = "TF"
+  l3out       = "L3OUT1"
+  name        = "NP1"
+  multipod    = false
+  remote_leaf = false
 
   depends_on = [aci_rest_managed.l3extOut]
 }

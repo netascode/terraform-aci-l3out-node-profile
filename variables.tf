@@ -174,3 +174,14 @@ variable "bgp_peers" {
     error_message = "`as_propagate`: Allowed value are: `none`, `no-prepend`, `replace-as` or `dual-as`."
   }
 }
+
+variable "multipod" {
+  description = "Multipod L3out flag"
+  type        = bool
+
+}
+
+variable "remote_leaf" {
+  description = "Remote leaf L3out flag"
+  type        = bool
+}
