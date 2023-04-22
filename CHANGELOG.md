@@ -1,4 +1,4 @@
-## 0.2.6 (unreleased)
+## 0.2.6
 
 - Add `remote_leaf` variable
 - Add `multipod` variable
