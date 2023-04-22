@@ -1,3 +1,8 @@
+## 0.2.6 (unreleased)
+
+- Add `remote_leaf` variable
+- Add `multipod` variable
+
 ## 0.2.5
 
 - Make the BGP peer `password` variable sensitive
