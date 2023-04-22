@@ -2,9 +2,11 @@ module "aci_l3out_node_profile" {
   source  = "netascode/l3out-node-profile/aci"
   version = ">= 0.2.1"
 
-  tenant = "ABC"
-  l3out  = "L3OUT1"
-  name   = "NP1"
+  tenant      = "ABC"
+  l3out       = "L3OUT1"
+  name        = "NP1"
+  multipod    = true
+  remote_leaf = false
   nodes = [{
     node_id               = 201
     pod_id                = 2

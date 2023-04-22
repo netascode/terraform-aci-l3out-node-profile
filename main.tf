@@ -81,7 +81,7 @@ resource "aci_rest_managed" "ipNexthopP" {
 }
 
 resource "aci_rest_managed" "l3extInfraNodeP" {
-  for_each   = { for node in var.nodes : node.node_id => node if var.tenant == "infra" }
+  for_each   = { for node in var.nodes : node.node_id => node if var.tenant == "infra" && var.multipod == true && var.remote_leaf == false }
   dn         = "${aci_rest_managed.l3extRsNodeL3OutAtt[each.key].dn}/infranodep"
   class_name = "l3extInfraNodeP"
   content = {
