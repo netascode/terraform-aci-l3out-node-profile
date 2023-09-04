@@ -260,13 +260,13 @@ variable "mpls_custom_qos_policy" {
   }
 }
 
-variable "bfd_multihop_policy" {
-  description = "BFD Multihop Policy"
+variable "bfd_multihop_node_policy" {
+  description = "BFD Multihop Node Policy"
   type        = string
   default     = ""
 
   validation {
-    condition     = can(regex("^[a-zA-Z0-9_.-]{0,64}$", var.bfd_multihop_policy))
+    condition     = can(regex("^[a-zA-Z0-9_.-]{0,64}$", var.bfd_multihop_node_policy))
     error_message = "Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
   }
 }

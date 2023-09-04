@@ -192,7 +192,7 @@ resource "aci_rest_managed" "bfdRsMhNodePol" {
   dn         = "${aci_rest_managed.l3extLNodeP.dn}/bfdMhNodeP/rsMhNodePol"
   class_name = "bfdRsMhNodePol"
   content = {
-    tnBfdMhNodePolName = var.bfd_multihop_policy
+    tnBfdMhNodePolName = var.bfd_multihop_node_policy
   }
 
   depends_on = [aci_rest_managed.bfdMhNodeP]
