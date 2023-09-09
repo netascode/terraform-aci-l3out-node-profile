@@ -1,4 +1,4 @@
-## 0.2.7 (unreleased)
+## 0.2.7
 
 - Add support for SR MPLS
 
