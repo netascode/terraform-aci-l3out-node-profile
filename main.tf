@@ -159,3 +159,89 @@ resource "aci_rest_managed" "bgpRsPeerToProfile_import" {
     direction = "import"
   }
 }
+
+resource "aci_rest_managed" "mplsNodeSidP" {
+  for_each   = { for node in var.nodes : node.node_id => node if node.loopback != null && var.tenant == "infra" && var.sr_mpls == true }
+  dn         = "${aci_rest_managed.l3extRsNodeL3OutAtt[each.key].dn}/lbp-[${each.value.loopback}]/nodesidp-${each.value.segment_id}"
+  class_name = "mplsNodeSidP"
+  content = {
+    loopbackAddr = each.value.mpls_transport_loopback
+    sidoffset    = each.value.segment_id
+  }
+
+  depends_on = [aci_rest_managed.l3extLoopBackIfP]
+}
+
+resource "aci_rest_managed" "l3extRsLNodePMplsCustQosPol" {
+  count      = var.tenant == "infra" && var.sr_mpls == true ? 1 : 0
+  dn         = "${aci_rest_managed.l3extLNodeP.dn}/rslNodePMplsCustQosPol"
+  class_name = "l3extRsLNodePMplsCustQosPol"
+  content = {
+    tDn = "uni/tn-infra/qosmplscustom-${var.mpls_custom_qos_policy}"
+  }
+}
+
+resource "aci_rest_managed" "bfdMhNodeP" {
+  count      = var.tenant == "infra" && var.sr_mpls == true ? 1 : 0
+  dn         = "${aci_rest_managed.l3extLNodeP.dn}/bfdMhNodeP"
+  class_name = "bfdMhNodeP"
+}
+
+resource "aci_rest_managed" "bfdRsMhNodePol" {
+  count      = var.tenant == "infra" && var.sr_mpls == true ? 1 : 0
+  dn         = "${aci_rest_managed.l3extLNodeP.dn}/bfdMhNodeP/rsMhNodePol"
+  class_name = "bfdRsMhNodePol"
+  content = {
+    tnBfdMhNodePolName = var.bfd_multihop_node_policy
+  }
+
+  depends_on = [aci_rest_managed.bfdMhNodeP]
+}
+
+resource "aci_rest_managed" "bgpInfraPeerP" {
+  for_each   = { for peer in var.bgp_infra_peers : peer.ip => peer }
+  dn         = "${aci_rest_managed.l3extLNodeP.dn}/infraPeerP-[${each.value.ip}]"
+  class_name = "bgpInfraPeerP"
+  content = {
+    addr     = each.value.ip
+    descr    = each.value.description
+    ctrl     = join(",", concat(each.value.allow_self_as == true ? ["allow-self-as"] : [], each.value.disable_peer_as_check == true ? ["dis-peer-as-check"] : [], ["send-com"], ["send-ext-com"]))
+    password = sensitive(each.value.password)
+    peerCtrl = join(",", concat(each.value.bfd == true ? ["bfd"] : []))
+    peerT    = "sr-mpls"
+    ttl      = each.value.ttl
+    adminSt  = each.value.admin_state == true ? "enabled" : "disabled"
+  }
+
+  lifecycle {
+    ignore_changes = [content["password"]]
+  }
+}
+
+resource "aci_rest_managed" "bgpAsP-bgpInfraPeerP" {
+  for_each   = { for peer in var.bgp_infra_peers : peer.ip => peer }
+  dn         = "${aci_rest_managed.bgpInfraPeerP[each.key].dn}/as"
+  class_name = "bgpAsP"
+  content = {
+    asn = each.value.remote_as
+  }
+}
+
+resource "aci_rest_managed" "bgpLocalAsnP-bgpInfraPeerP" {
+  for_each   = { for peer in var.bgp_infra_peers : peer.ip => peer if peer.local_as != null }
+  dn         = "${aci_rest_managed.bgpInfraPeerP[each.key].dn}/localasn"
+  class_name = "bgpLocalAsnP"
+  content = {
+    localAsn     = each.value.local_as
+    asnPropagate = each.value.as_propagate
+  }
+}
+
+resource "aci_rest_managed" "bgpRsPeerPfxPol-bgpInfraPeerP" {
+  for_each   = { for peer in var.bgp_infra_peers : peer.ip => peer if peer.peer_prefix_policy != null }
+  dn         = "${aci_rest_managed.bgpInfraPeerP[each.key].dn}/rspeerPfxPol"
+  class_name = "bgpRsPeerPfxPol"
+  content = {
+    tnBgpPeerPfxPolName = each.value.peer_prefix_policy
+  }
+}

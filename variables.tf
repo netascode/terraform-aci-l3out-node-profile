@@ -31,11 +31,13 @@ variable "name" {
 variable "nodes" {
   description = "List of nodes. Allowed values `node_id`: 1-4000. Allowed values `pod_id`: 1-255. Default value `pod_id`: 1. Default value `router_id_as_loopback`: true. Allowed values `static_routes.preference`: 1-255. Default value `static_routes.preference`: 1. Default value `static_routes.bfd`: false. Allowed values `static_routes.next_hops.preference`: 1-255. Default value `static_routes.next_hops.preference`: 1. Choices `type`: `prefix`, `none`. Default value `type`: `prefix`."
   type = list(object({
-    node_id               = number
-    pod_id                = optional(number, 1)
-    router_id             = string
-    router_id_as_loopback = optional(bool, true)
-    loopback              = optional(string)
+    node_id                 = number
+    pod_id                  = optional(number, 1)
+    router_id               = string
+    router_id_as_loopback   = optional(bool, true)
+    loopback                = optional(string)
+    mpls_transport_loopback = optional(string)
+    segment_id              = optional(number)
     static_routes = optional(list(object({
       prefix      = string
       description = optional(string, "")
@@ -185,4 +187,86 @@ variable "remote_leaf" {
   description = "Remote leaf L3out flag"
   type        = bool
   default     = false
+}
+
+variable "sr_mpls" {
+  description = "SR MPLS L3out flag"
+  type        = bool
+  default     = false
+}
+
+variable "bgp_infra_peers" {
+  description = "List of BGP EVPN peers for SR MPLS L3out. Allowed values `remote_as`: 0-4294967295. Default value `allow_self_as`: false. Default value `disable_peer_as_check`: false. Default value `bfd`: false. Default value `ttl`: 2. Default value `admin_state`: true. Allowed values `local_as`: 0-4294967295. Choices `as_propagate`: `none`, `no-prepend`, `replace-as`, `dual-as`. Default value `as_propagate`: `none`."
+  type = list(object({
+    ip                    = string
+    remote_as             = string
+    description           = optional(string, "")
+    allow_self_as         = optional(bool, false)
+    disable_peer_as_check = optional(bool, false)
+    password              = optional(string)
+    bfd                   = optional(bool, false)
+    ttl                   = optional(number, 1)
+    admin_state           = optional(bool, true)
+    local_as              = optional(number)
+    as_propagate          = optional(string, "none")
+    peer_prefix_policy    = optional(string)
+  }))
+  default = []
+
+  validation {
+    condition = alltrue([
+      for b in var.bgp_infra_peers : b.remote_as >= 0 && b.remote_as <= 4294967295
+    ])
+    error_message = "`remote_as`: Minimum value: `0`. Maximum value: `4294967295`."
+  }
+
+  validation {
+    condition = alltrue([
+      for b in var.bgp_infra_peers : b.description == null || try(can(regex("^[a-zA-Z0-9\\!#$%()*,-./:;@ _{|}~?&+]{0,128}$", b.description)), false)
+    ])
+    error_message = "`description`: Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `\\`, `!`, `#`, `$`, `%`, `(`, `)`, `*`, `,`, `-`, `.`, `/`, `:`, `;`, `@`, ` `, `_`, `{`, `|`, }`, `~`, `?`, `&`, `+`. Maximum characters: 128."
+  }
+
+  validation {
+    condition = alltrue([
+      for b in var.bgp_infra_peers : try(b.ttl >= 1 && b.ttl <= 255, false)
+    ])
+    error_message = "`ttl`: Minimum value: `1`. Maximum value: `255`."
+  }
+
+  validation {
+    condition = alltrue([
+      for b in var.bgp_infra_peers : b.local_as == null || try(b.local_as >= 0 && b.local_as <= 4294967295, false)
+    ])
+    error_message = "`local_as`: Minimum value: `0`. Maximum value: `4294967295`."
+  }
+
+  validation {
+    condition = alltrue([
+      for b in var.bgp_infra_peers : b.as_propagate == null || try(contains(["none", "no-prepend", "replace-as", "dual-as"], b.as_propagate), false)
+    ])
+    error_message = "`as_propagate`: Allowed value are: `none`, `no-prepend`, `replace-as` or `dual-as`."
+  }
+}
+
+variable "mpls_custom_qos_policy" {
+  description = "MPLS Customer QoS Policy"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9_.-]{0,64}$", var.mpls_custom_qos_policy))
+    error_message = "Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
+}
+
+variable "bfd_multihop_node_policy" {
+  description = "BFD Multihop Node Policy"
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9_.-]{0,64}$", var.bfd_multihop_node_policy))
+    error_message = "Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
 }
