@@ -162,18 +162,16 @@ resource "aci_rest_managed" "bgpRsPeerToProfile_import" {
 
 resource "aci_rest_managed" "mplsNodeSidP" {
   for_each   = { for node in var.nodes : node.node_id => node if node.loopback != null && var.tenant == "infra" && var.sr_mpls == true }
-  dn         = "${aci_rest_managed.l3extRsNodeL3OutAtt[each.key].dn}/lbp-[${each.value.loopback}]/nodesidp-${each.value.segment_id}"
+  dn         = "${aci_rest_managed.l3extLoopBackIfP[each.key].dn}/nodesidp-${each.value.segment_id}"
   class_name = "mplsNodeSidP"
   content = {
     loopbackAddr = each.value.mpls_transport_loopback
     sidoffset    = each.value.segment_id
   }
-
-  depends_on = [aci_rest_managed.l3extLoopBackIfP]
 }
 
 resource "aci_rest_managed" "l3extRsLNodePMplsCustQosPol" {
-  count      = var.tenant == "infra" && var.sr_mpls == true ? 1 : 0
+  count      = var.tenant == "infra" && var.sr_mpls == true && var.mpls_custom_qos_policy != "" ? 1 : 0
   dn         = "${aci_rest_managed.l3extLNodeP.dn}/rslNodePMplsCustQosPol"
   class_name = "l3extRsLNodePMplsCustQosPol"
   content = {
@@ -182,20 +180,18 @@ resource "aci_rest_managed" "l3extRsLNodePMplsCustQosPol" {
 }
 
 resource "aci_rest_managed" "bfdMhNodeP" {
-  count      = var.tenant == "infra" && var.sr_mpls == true ? 1 : 0
+  count      = var.tenant == "infra" && var.sr_mpls == true && var.bfd_multihop_node_policy != "" ? 1 : 0
   dn         = "${aci_rest_managed.l3extLNodeP.dn}/bfdMhNodeP"
   class_name = "bfdMhNodeP"
 }
 
 resource "aci_rest_managed" "bfdRsMhNodePol" {
-  count      = var.tenant == "infra" && var.sr_mpls == true ? 1 : 0
-  dn         = "${aci_rest_managed.l3extLNodeP.dn}/bfdMhNodeP/rsMhNodePol"
+  count      = var.tenant == "infra" && var.sr_mpls == true && var.bfd_multihop_node_policy != "" ? 1 : 0
+  dn         = "${aci_rest_managed.bfdMhNodeP[0].dn}/rsMhNodePol"
   class_name = "bfdRsMhNodePol"
   content = {
     tnBfdMhNodePolName = var.bfd_multihop_node_policy
   }
-
-  depends_on = [aci_rest_managed.bfdMhNodeP]
 }
 
 resource "aci_rest_managed" "bgpInfraPeerP" {

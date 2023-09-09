@@ -1,3 +1,7 @@
+## 0.2.7 (unreleased)
+
+- Add support for SR MPLS
+
 ## 0.2.6
 
 - Add `remote_leaf` variable

@@ -178,19 +178,19 @@ variable "bgp_peers" {
 }
 
 variable "multipod" {
-  description = "Multipod L3out flag"
+  description = "Multipod L3out flag."
   type        = bool
   default     = false
 }
 
 variable "remote_leaf" {
-  description = "Remote leaf L3out flag"
+  description = "Remote leaf L3out flag."
   type        = bool
   default     = false
 }
 
 variable "sr_mpls" {
-  description = "SR MPLS L3out flag"
+  description = "SR MPLS L3out flag."
   type        = bool
   default     = false
 }
