@@ -1,3 +1,7 @@
+## 0.2.8 (unreleased)
+
+- Allow a static route next hop preference of `0`
+
 ## 0.2.7
 
 - Add support for SR MPLS
