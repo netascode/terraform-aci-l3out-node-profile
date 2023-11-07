@@ -29,7 +29,7 @@ variable "name" {
 }
 
 variable "nodes" {
-  description = "List of nodes. Allowed values `node_id`: 1-4000. Allowed values `pod_id`: 1-255. Default value `pod_id`: 1. Default value `router_id_as_loopback`: true. Allowed values `static_routes.preference`: 1-255. Default value `static_routes.preference`: 1. Default value `static_routes.bfd`: false. Allowed values `static_routes.next_hops.preference`: 1-255. Default value `static_routes.next_hops.preference`: 1. Choices `type`: `prefix`, `none`. Default value `type`: `prefix`."
+  description = "List of nodes. Allowed values `node_id`: 1-4000. Allowed values `pod_id`: 1-255. Default value `pod_id`: 1. Default value `router_id_as_loopback`: true. Allowed values `static_routes.preference`: 1-255. Default value `static_routes.preference`: 1. Default value `static_routes.bfd`: false. Allowed values `static_routes.next_hops.preference`: 0-255. Default value `static_routes.next_hops.preference`: 1. Choices `type`: `prefix`, `none`. Default value `type`: `prefix`."
   type = list(object({
     node_id                 = number
     pod_id                  = optional(number, 1)
@@ -82,9 +82,9 @@ variable "nodes" {
 
   validation {
     condition = alltrue(flatten([
-      for n in var.nodes : [for s in coalesce(n.static_routes, []) : [for nh in coalesce(s.next_hops, []) : nh.preference == null || try(nh.preference >= 1 && nh.preference <= 255, false)]]
+      for n in var.nodes : [for s in coalesce(n.static_routes, []) : [for nh in coalesce(s.next_hops, []) : nh.preference == null || try(nh.preference >= 0 && nh.preference <= 255, false)]]
     ]))
-    error_message = "`static_routes.next_hops.preference`: Minimum value: `1`. Maximum value: `255`."
+    error_message = "`static_routes.next_hops.preference`: Minimum value: `0`. Maximum value: `255`."
   }
 
   validation {
