@@ -1,4 +1,4 @@
-## 0.2.8 (unreleased)
+## 0.2.8
 
 - Allow a static route next hop preference of `0`
 
